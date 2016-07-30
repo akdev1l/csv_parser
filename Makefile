@@ -8,4 +8,4 @@ hashmap:
 	$(CC) $(C_FLAGS) -c hashmap.c -o $(OBJ_DIR)/hashmap.o
 
 all: hashmap
-	$(CC) $(C_FLAGS) $(OBJ_DIR)/*.o main.c -o $(BIN_DIR)/$(BI*.cN_NAME)
+	$(CC) $(C_FLAGS) $(OBJ_DIR)/*.o main.c -o $(BIN_DIR)/$(BIN_NAME)

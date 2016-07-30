@@ -24,10 +24,11 @@ void clear_buffer()
 
 int count_keys(const char* line, const char* delimiter)
 {
+    // Count all the keys in the csv file //
     char* cpy_line = malloc(strlen(line)+1);
     strcpy(cpy_line, line);
     char* key = strtok(cpy_line, delimiter);
-    int key_count = key?1:0;
+    int key_count = key?1:0; //if key was found then key_count = 1
     while(key) {
         key = strtok(NULL, delimiter);
         ++key_count;
@@ -38,6 +39,7 @@ int count_keys(const char* line, const char* delimiter)
 
 void get_keys(char** keys, int* count_keys, char* line, const char* delimiter)
 {
+    // Retrieves all keys in one line delimited by delimiter //
     char* key = strtok(line, delimiter);
     while(key) {
         keys[*count_keys] = malloc(strlen(key)+1);
@@ -49,6 +51,7 @@ void get_keys(char** keys, int* count_keys, char* line, const char* delimiter)
 
 void get_fields(hashmap** entry, char** keys, int count_keys, char* line, const char* delimiter)
 {
+    // Retrieves field by field assigning into hashmap['key'] //
     char* field = strtok(line, delimiter);
     for(int i = 0; i < count_keys; ++i) {
         if(i == 0 && field) {
@@ -91,7 +94,7 @@ void print_entries(hashmap** entries, int num_entries, char** keys, int num_keys
 
 int main(void)
 {
-    char filename[31] = {0};
+    char filename[MAX_LINE] = {0};
     hashmap* entries[MAX_ENTRIES] = {NULL};
     int entry_pos = 0;
     int num_entries = 0;
@@ -100,7 +103,7 @@ int main(void)
     char line[MAX_LINE] = {0};
     FILE* csv_file = NULL;
     
-    get_filename(filename, 31);
+    get_filename(filename, MAX_LINE);
     csv_file = fopen(filename, "r");
 
     if(csv_file && !feof(csv_file)) {
@@ -111,16 +114,17 @@ int main(void)
             readline(csv_file, line, MAX_LINE);
             get_fields(&entries[entry_pos], keys, key_count, line, DELIM);
             ++entry_pos;
-            if(entry_pos >= MAX_ENTRIES - 1) {
+            if(entry_pos >= MAX_ENTRIES) {
                 print_entries(entries, entry_pos, keys, key_count);
                 free_entries(entries, entry_pos);
                 entry_pos = 0;
             }
             ++num_entries;
         }
-        printf("Keys in csv file: %d\n", key_count);
-        printf("Entries in csv file: %d\n", num_entries);
+        fprintf(stderr, "Keys in csv file: %d\n", key_count);
+        fprintf(stderr, "Entries in csv file: %d\n", num_entries);
         print_entries(entries, entry_pos, keys, key_count);
+        free_entries(entries, entry_pos);
         for(int i = 0; i < key_count; ++i) {
             free(keys[i]);
         }
