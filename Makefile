@@ -5,6 +5,7 @@ BIN_NAME=main
 OBJ_DIR=bin/obj
 
 hashmap:
+	mkdir -p $(OBJ_DIR)
 	$(CC) $(C_FLAGS) -c hashmap.c -o $(OBJ_DIR)/hashmap.o
 
 all: hashmap

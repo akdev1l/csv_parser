@@ -92,7 +92,7 @@ void print_entries(hashmap** entries, int num_entries, char** keys, int num_keys
     }
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
     char filename[MAX_LINE] = {0};
     hashmap* entries[MAX_ENTRIES] = {NULL};
@@ -103,7 +103,12 @@ int main(void)
     char line[MAX_LINE] = {0};
     FILE* csv_file = NULL;
     
-    get_filename(filename, MAX_LINE);
+    if(argc <= 1) {
+        get_filename(filename, MAX_LINE);
+    }
+    else {
+        strcpy(filename, argv[1]);
+    }
     csv_file = fopen(filename, "r");
 
     if(csv_file && !feof(csv_file)) {
@@ -121,9 +126,9 @@ int main(void)
             }
             ++num_entries;
         }
+        print_entries(entries, entry_pos, keys, key_count);
         fprintf(stderr, "Keys in csv file: %d\n", key_count);
         fprintf(stderr, "Entries in csv file: %d\n", num_entries);
-        print_entries(entries, entry_pos, keys, key_count);
         free_entries(entries, entry_pos);
         for(int i = 0; i < key_count; ++i) {
             free(keys[i]);
