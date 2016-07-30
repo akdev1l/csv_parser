@@ -1,4 +1,4 @@
-CC=$(shell which gcc)
+CC=cc
 C_FLAGS=-Wall -std=c99
 BIN_DIR=bin
 BIN_NAME=main
