@@ -1,58 +1,48 @@
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+
 #include "hashmap.h"
 
-value_t create_value(const char* data)
-{
-    value_t tmp;
-    tmp.data = malloc(strlen(data)+1);
-    strcpy(tmp.data, data);
-    return tmp;
-}
-
-void destroy_value(value_t* value)
-{
-    free(value->data);
-}
-
-int equal(const value_t v1, const value_t v2)
-{
-    return strcmp(v1.data, v2.data) == 0;
-}
-
-hashmap* create_hashmap(const char* key, value_t value)
+hashmap* create_hashmap(const char* key, const char* value)
 {
     hashmap* tmp = malloc(sizeof(hashmap));
-    tmp->value = value;
+    tmp->value = malloc(strlen(value)+1);
+    assert(tmp->value != NULL);
+    strcpy(tmp->value, value);
     tmp->key = malloc(strlen(key)+1);
+    assert(tmp->key != NULL);
     strcpy(tmp->key, key);
     tmp->next = NULL;
     return tmp;
 }
 
-value_t get_value(hashmap* container, const char* key)
+const char* get_value(hashmap* container, const char* key)
 {
     if(container) {
-        if(strcmp(key, container->key) == 0) {
-            return container->value;
-        }
-        else {
-            return get_value(container->next, key);
+        hashmap* current = container;
+        while(current) {
+            if(strcmp(key, current->key) == 0) {
+                return current->value;
+            }
+            current = current->next;
         }
     }
-    return NULL_VALUE;
+    return NULL;
 }
 int key_exists(hashmap* container, const char* key)
 {
     if(container) {
-        if(strcmp(container->key, key) == 0) {
-            return 1;
-        }
-        else {
-            return key_exists(container->next, key);
+        hashmap* current = container;
+        while(current) {
+            if(strcmp(key, current->key) == 0) {
+                return 1;
+            }
         }
     }
     return 0;
 }
-void set_value(hashmap* container, const char* key, value_t value)
+void set_value(hashmap* container, const char* key, const char* value)
 {
     hashmap* current = container;
     hashmap* previous = NULL;
@@ -61,8 +51,10 @@ void set_value(hashmap* container, const char* key, value_t value)
         current = current->next;
     }
     if(current) {
-        destroy_value(&current->value);
-        current->value = value;
+        free(current->value);
+        current->value = malloc(strlen(value)+1);
+        assert(current->value != NULL);
+        strcpy(current->value, value);
     }
     else {
         previous->next = create_hashmap(key, value);
@@ -72,9 +64,9 @@ void set_value(hashmap* container, const char* key, value_t value)
 void destroy_hashmap(hashmap* container)
 {
     if(container) {
-        destroy_value(&container->value);
-        destroy_hashmap(container->next);
         free(container->key);
+        free(container->value);
+        destroy_hashmap(container->next);
         free(container);
     }
 }

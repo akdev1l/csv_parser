@@ -55,19 +55,20 @@ void get_fields(hashmap** entry, char** keys, int count_keys, char* line, const 
     char* field = strtok(line, delimiter);
     for(int i = 0; i < count_keys; ++i) {
         if(i == 0 && field) {
-            *entry = create_hashmap(keys[i], create_value(field));
+            *entry = create_hashmap(keys[i], field);
         }
         else if(field) {
-            set_value(*entry, keys[i], create_value(field));
+            set_value(*entry, keys[i], field);
         }
         field = strtok(NULL, delimiter);
     }
 }
 
-void readline(FILE* file, char* line, int max_length)
+char* readline(FILE* file, char* line, int max_length)
 {
-    fgets(line, max_length, file);
+    char* return_val = fgets(line, max_length, file);
     strip_newline(line);
+    return return_val;
 }
 
 void get_filename(char* out, int length)
@@ -86,7 +87,7 @@ void print_entries(hashmap** entries, int num_entries, char** keys, int num_keys
 {
     for(int i = 0; i < num_entries; ++i) {
         for(int j = 0; j < num_keys; ++j) {
-            printf("%s: %s\t", keys[j], get_value(entries[i], keys[j]).data);
+            printf("%s: %s\t", keys[j], get_value(entries[i], keys[j]));
         }
         printf("\n");
     }
@@ -115,8 +116,7 @@ int main(int argc, char** argv)
         readline(csv_file, line, MAX_LINE);
         keys = malloc(count_keys(line, DELIM) * sizeof(char*));
         get_keys(keys, &key_count, line, DELIM);
-        while(!feof(csv_file)) {
-            readline(csv_file, line, MAX_LINE);
+        while(readline(csv_file, line, MAX_LINE) && !feof(csv_file)) {
             get_fields(&entries[entry_pos], keys, key_count, line, DELIM);
             ++entry_pos;
             if(entry_pos >= MAX_ENTRIES) {
