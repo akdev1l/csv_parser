@@ -1,5 +1,5 @@
 CC=cc
-C_FLAGS=-Wall -std=c99 -pg -g
+C_FLAGS=-Wall -std=c99 -pg -g -O2
 BIN_DIR=bin
 BIN_NAME=main
 OBJ_DIR=bin/obj

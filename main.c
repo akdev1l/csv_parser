@@ -12,14 +12,10 @@
 
 void strip_newline(char* str)
 {
-    if(str[strlen(str)-1] == '\n') {
-        str[strlen(str)-1] = '\0';
+    int len = strlen(str);
+    if(str[len-1] == '\n') {
+        str[len-1] = '\0';
     }
-}
-void clear_buffer()
-{
-    int c;
-    while((c = getchar()) != '\n' && c != EOF);
 }
 
 int count_keys(const char* line, const char* delimiter)
