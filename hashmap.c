@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include "hashmap.h"
 
@@ -64,9 +65,14 @@ void set_value(hashmap* container, const char* key, const char* value)
 void destroy_hashmap(hashmap* container)
 {
     if(container) {
-        free(container->key);
-        free(container->value);
-        destroy_hashmap(container->next);
-        free(container);
+        hashmap* current = container;
+        hashmap* next = NULL;
+        while(current) {
+            next = current->next;
+            free(current->key);
+            free(current->value);
+            free(current);
+            current = next;
+        }
     }
 }

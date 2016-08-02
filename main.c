@@ -24,7 +24,7 @@ int count_keys(const char* line, const char* delimiter)
     char* cpy_line = malloc(strlen(line)+1);
     strcpy(cpy_line, line);
     char* key = strtok(cpy_line, delimiter);
-    int key_count = key?1:0; //if key was found then key_count = 1
+    int key_count = 0; //if key was found then key_count = 1
     while(key) {
         key = strtok(NULL, delimiter);
         ++key_count;
@@ -33,14 +33,15 @@ int count_keys(const char* line, const char* delimiter)
     return key_count;
 } 
 
-void get_keys(char** keys, int* count_keys, char* line, const char* delimiter)
+void get_keys(char** keys, char* line, const char* delimiter)
 {
     // Retrieves all keys in one line delimited by delimiter //
     char* key = strtok(line, delimiter);
+    int count_keys = 0;
     while(key) {
-        keys[*count_keys] = malloc(strlen(key)+1);
-        strcpy(keys[*count_keys], key);
-        ++*count_keys;
+        keys[count_keys] = malloc(strlen(key)+1);
+        strcpy(keys[count_keys], key);
+        ++count_keys;
         key = strtok(NULL, delimiter);
     }
 }
@@ -110,8 +111,9 @@ int main(int argc, char** argv)
 
     if(csv_file && !feof(csv_file)) {
         readline(csv_file, line, MAX_LINE);
-        keys = malloc(count_keys(line, DELIM) * sizeof(char*));
-        get_keys(keys, &key_count, line, DELIM);
+        key_count = count_keys(line, DELIM);
+        keys = malloc(key_count * sizeof(char*));
+        get_keys(keys, line, DELIM);
         while(readline(csv_file, line, MAX_LINE) && !feof(csv_file)) {
             get_fields(&entries[entry_pos], keys, key_count, line, DELIM);
             ++entry_pos;
